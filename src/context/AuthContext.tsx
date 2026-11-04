@@ -62,3 +62,10 @@ export function useAuth() {
 
   return context;
 }
+
+
+//useState mantiene el usuario conectado.
+//localStorage permite conservar la sesión aunque se actualice la página.
+//login() guarda el usuario.
+//logout() elimina la sesión.
+//useAuth() permite que tus compañeros accedan al usuario desde sus componentes.
