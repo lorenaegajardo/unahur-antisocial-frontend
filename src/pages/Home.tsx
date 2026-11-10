@@ -1,4 +1,4 @@
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row, Spinner } from "react-bootstrap";
 import PostCard from "../components/PostCard";
 import { obtenerPosts } from "../services/posts"
 import { useEffect, useState } from "react";
@@ -6,13 +6,42 @@ import type { Post } from "../types/index"
 
 function Home() {
   const [posts, setPosts] = useState<Post[]>([])
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     (async () => {
-      const data: Post[] = await obtenerPosts()
-      setPosts(data)
+      try {
+        const data: Post[] = await obtenerPosts()
+        setPosts(data)
+      } catch (error) {
+        setError("Hubo un error al cargar los posts.")
+      } finally {
+        setLoading(false)
+      }
     })()
   }, [])
+
+  if (loading) {
+    return (
+      <Container className="estadoContainer">
+        <div className="text-center bg-light p-5 rounded-5 border">
+          <Spinner animation="border" />
+          <h6>Cargando publicaciones...</h6>
+        </div>
+      </Container>
+    )
+  }
+
+  if (error) {
+    return (
+      <Container className="estadoContainer">
+        <div className="text-center bg-light p-4 rounded-2 border border-danger">
+          <h4 className="text-center fw-bold">{error}</h4>
+        </div>
+      </Container>
+    )
+  }
 
   return (
     <Container className="mt-4">

@@ -2,17 +2,12 @@ import { API_URL } from "./api";
 import type { Post, PostImage } from "../types/index"
 
 export const obtenerPosts = async (): Promise<Post[]> => {
-  try {
-    const respuesta = await fetch(`${API_URL}/posts`)
-    if (!respuesta.ok) {
-      throw new Error("Error al obtener los posts.")
-    }
-    const data: Post[] = await respuesta.json()
-    return [...data].reverse()
-  } catch (error) {
-    console.log(error)
-    return []
+  const respuesta = await fetch(`${API_URL}/posts`)
+  if (!respuesta.ok) {
+    throw new Error("Error al obtener los posts.")
   }
+  const data: Post[] = await respuesta.json()
+  return [...data].reverse()
 }
 
 export const obtenerPostPorId = async (id: number): Promise<Post | null> => {
