@@ -9,7 +9,10 @@ export interface User {
 export interface Post {
   id: number;
   description: string;
-  userId: number;
+  UserId: number;
+  User?: User;
+  Tags?: Tag[];
+  createdAt?: string;
 }
 
 // Etiquetas disponibles para las publicaciones.
