@@ -90,19 +90,4 @@ function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
 }
 
 export default CommentForm;
-/*
 
-### Explicación de `CommentForm.tsx`:
-* **Componente Controlado (`useState`)**: El valor del `textarea` está atado al estado `text`. Cada vez que escribís una letra, `onChange` actualiza el estado (esto lo pedía explícitamente la consigna del TP)[cite: 2].
-* **Uso de `useAuth()`**: Como para crear un comentario la API necesita saber el `userId`, usamos el contexto global que ya armaron en el grupo para obtener los datos del usuario conectado.
-* **`onCommentAdded`**: Es una función "callback" que se le pasa desde afuera. Sirve para que, una vez que el servidor acepta el nuevo comentario, le avise a la pantalla de detalle que recargue la lista y así el comentario aparezca al instante sin tener que apretar F5.
-
----
-
-### ¿Cómo se integran estos dos en el Detalle del Post? (Opcional por si lo necesitan)
-Para que veas cómo se usan, en la página de detalle (`DetallePost.tsx`) simplemente los llamarías pasándoles el `postId`:
-
-
-// Ejemplo conceptual de cómo se usaria en DetallePost:
-<CommentList postId={idDelPost} />
-<CommentForm postId={idDelPost} onCommentAdded={() => { /* recargar comentarios */ 

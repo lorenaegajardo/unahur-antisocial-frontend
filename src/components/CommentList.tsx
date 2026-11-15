@@ -68,13 +68,6 @@ function CommentList({ postId }: CommentListProps) {
 }
 
 export default CommentList;
-/*
 
-### Explicación de `CommentList.tsx`:
-* **`interface CommentListProps`**: En TypeScript, le decimos a este componente que obligatoriamente necesita recibir una prop llamada `postId` (de tipo número) para saber de qué publicación traer los comentarios.
-* **`useEffect`**: Es el hook que usamos en React para disparar efectos secundarios, como hacer una petición a una API al cargar la página. El array final `[postId]` significa que si el ID de la publicación cambia, se volverán a buscar los comentarios automáticamente.
-* **Manejo de estados**: Usamos `loading` para mostrar un texto de carga mientras responde el servidor, `error` por si falla la red, y `comments` para guardar la lista de comentarios que nos devuelve el backend.
-
-*/
 
 
