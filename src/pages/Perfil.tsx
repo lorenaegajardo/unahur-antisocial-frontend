@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../services/api";
+import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
+import UserPostCard from "../components/UserPostCard";
 
 interface Post {
   id: number;
@@ -16,7 +18,6 @@ function Perfil() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Manejar el cierre de sesión
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -28,7 +29,6 @@ function Perfil() {
 
       try {
         setLoading(true);
-        // Consultamos a la API los posts filtrados por el userId del usuario actual (según consigna)
         const response = await fetch(`${API_URL}/posts?userId=${user.id}`);
 
         if (!response.ok) {
@@ -49,37 +49,72 @@ function Perfil() {
 
   if (!user) return null;
 
+  if (loading) {
+    return (
+      <Container className="estadoContainer">
+        <div className="text-center bg-light p-5 rounded-5 border">
+          <Spinner animation="border" />
+          <h6 className="mt-2">Cargando tu perfil...</h6>
+        </div>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="estadoContainer">
+        <div className="text-center bg-light p-4 rounded-2 border border-danger">
+          <h4 className="text-center fw-bold text-danger">{error}</h4>
+        </div>
+      </Container>
+    );
+  }
+
   return (
-    <main>
-      <h1>Mi Perfil</h1>
-      <div>
-        <p><strong>Nombre de usuario:</strong> {user.nickName}</p>
-        <button type="button" onClick={handleLogout}>
-          Cerrar sesión
-        </button>
-      </div>
+    <Container className="mt-4 mb-5">
+      {/* Tarjeta de información del usuario */}
+      <Row className="justify-content-center mb-4">
+        <Col xs={12} md={10} lg={8}>
+          <div className="bg-white p-4 rounded-4 shadow-sm border d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div className="d-flex align-items-center gap-3">
+              <div className="postUserLogo text-white d-flex align-items-center justify-content-center fs-4 fw-bold">
+                {user.nickName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h4 className="mb-0 fw-bold">{user.nickName}</h4>
+                <small className="text-muted">Miembro de UnaHur Anti-Social Net</small>
+              </div>
+            </div>
+            <Button
+              variant="outline-danger"
+              className="fw-bold px-4"
+              onClick={handleLogout}
+            >
+              Cerrar sesión
+            </Button>
+          </div>
+        </Col>
+      </Row>
 
-      <section>
-        <h2>Mis publicaciones</h2>
+      {/* Sección de publicaciones */}
+      <Row className="justify-content-center">
+        <Col xs={12} md={10} lg={8}>
+          <h3 className="fw-bold mb-3">Mis publicaciones</h3>
 
-        {loading && <p>Cargando tus publicaciones...</p>}
-        {error && <p role="alert" style={{ color: "red" }}>{error}</p>}
-
-        {!loading && userPosts.length === 0 ? (
-          <p>Todavía no realizaste ninguna publicación.</p>
-        ) : (
-          <ul>
-            {userPosts.map((post) => (
-              <li key={post.id}>
-                <p>{post.description}</p>
-                {/* Botón Ver más que lleva al detalle del post */}
-                <Link to={`/post/${post.id}`}>Ver más</Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </main>
+          {userPosts.length === 0 ? (
+            <div className="text-center bg-light p-5 rounded-4 border text-muted">
+              <h5 className="mb-0">Todavía no realizaste ninguna publicación.</h5>
+            </div>
+          ) : (
+            <div className="d-flex flex-column gap-3">
+              {userPosts.map((post) => (
+                <UserPostCard key={post.id} post={post} />
+              ))}
+            </div>
+          )}
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
