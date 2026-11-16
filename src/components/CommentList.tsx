@@ -4,20 +4,14 @@
 
 import { useEffect, useState } from "react";
 import { API_URL } from "../services/api";
-
-// Definimos la estructura de un comentario según la API
-interface Comment {
-  id: number;
-  text: string;
-  postId: number;
-  userId: number;
-}
+import type { Comment } from "../types/index"
 
 interface CommentListProps {
   postId: number; // Recibe el ID de la publicación para saber qué comentarios buscar
+  actualizacion: number;
 }
 
-function CommentList({ postId }: CommentListProps) {
+function CommentList({ postId, actualizacion }: CommentListProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -44,7 +38,7 @@ function CommentList({ postId }: CommentListProps) {
     };
 
     fetchComments();
-  }, [postId]);
+  }, [postId, actualizacion]);
 
   if (loading) return <p>Cargando comentarios...</p>;
   if (error) return <p role="alert" style={{ color: "red" }}>{error}</p>;
@@ -58,7 +52,7 @@ function CommentList({ postId }: CommentListProps) {
         <ul>
           {comments.map((comment) => (
             <li key={comment.id}>
-              <p>{comment.text}</p>
+              <p>{comment.content}</p>
             </li>
           ))}
         </ul>

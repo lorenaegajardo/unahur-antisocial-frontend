@@ -71,7 +71,7 @@ function CrearPost() {
         body: JSON.stringify({
           description: description.trim(),
           userId: user.id,
-          tags: selectedTags,
+          tagIds: selectedTags,
         }),
       });
 
