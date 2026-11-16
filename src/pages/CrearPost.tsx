@@ -2,6 +2,7 @@ import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../services/api";
+import { Container, Row, Col, Form, Button, Spinner, Alert } from "react-bootstrap";
 
 interface Tag {
   id: number;
@@ -36,8 +37,8 @@ function CrearPost() {
     fetchTags();
   }, []);
 
-  // Manejar la selección/deselección de etiquetas mediante checkboxes
-  const handleTagChange = (tagId: number) => {
+  // Manejar la selección/deselección de etiquetas
+  const handleTagToggle = (tagId: number) => {
     if (selectedTags.includes(tagId)) {
       setSelectedTags(selectedTags.filter((id) => id !== tagId));
     } else {
@@ -63,7 +64,7 @@ function CrearPost() {
     setLoading(true);
 
     try {
-      // 2. Hacemos el POST /posts con la descripción, el userId y las etiquetas (según consigna)
+      // 2. Hacemos el POST /posts
       const postResponse = await fetch(`${API_URL}/posts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,9 +80,9 @@ function CrearPost() {
       }
 
       const newPost = await postResponse.json();
-      const postId = newPost.id; // Obtenemos el ID del post recién creado
+      const postId = newPost.id;
 
-      // 3. Si se ingresó una URL de imagen, hacemos el POST /postimages asociado (según consigna)
+      // 3. Si se ingresó una URL de imagen, hacemos el POST /postimages asociado
       if (imageUrl.trim() && postId) {
         const imageResponse = await fetch(`${API_URL}/postimages`, {
           method: "POST",
@@ -97,7 +98,7 @@ function CrearPost() {
         }
       }
 
-      // 4. Al finalizar, redirigimos al perfil del usuario (según consigna)
+      // 4. Redirigimos al perfil
       navigate("/perfil");
     } catch (err: any) {
       setError(err.message || "Error al conectar con el servidor.");
@@ -107,55 +108,98 @@ function CrearPost() {
   };
 
   return (
-    <main>
-      <h1>Crear Nueva Publicación</h1>
+    <Container className="mt-4 mb-5">
+      <Row className="justify-content-center">
+        <Col xs={12} md={10} lg={8}>
+          <div className="bg-white p-4 p-md-5 rounded-4 shadow-sm border">
+            <h2 className="fw-bold mb-4 text-center">Crear Nueva Publicación</h2>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="description">Descripción *</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="¿Qué estás pensando?"
-            rows={3}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="imageUrl">URL de imagen (opcional)</label>
-          <input
-            id="imageUrl"
-            type="text"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="https://ejemplo.com/imagen.jpg"
-          />
-        </div>
-
-        <div>
-          <label>Etiquetas</label>
-          <div>
-            {tags.map((tag) => (
-              <label key={tag.id} style={{ marginRight: "15px" }}>
-                <input
-                  type="checkbox"
-                  checked={selectedTags.includes(tag.id)}
-                  onChange={() => handleTagChange(tag.id)}
+            <Form onSubmit={handleSubmit}>
+              {/* Campo Descripción */}
+              <Form.Group className="mb-3" controlId="description">
+                <Form.Label className="fw-bold">
+                  Descripción <span className="text-danger">*</span>
+                </Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={4}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="¿Qué estás pensando?"
+                  className="rounded-3 p-3"
+                  style={{ resize: "vertical" }}
                 />
-                {tag.name}
-              </label>
-            ))}
+              </Form.Group>
+
+              {/* Campo URL de Imagen */}
+              <Form.Group className="mb-4" controlId="imageUrl">
+                <Form.Label className="fw-bold">URL de imagen <span className="text-muted fw-normal">(opcional)</span></Form.Label>
+                <Form.Control
+                  type="url"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="https://ejemplo.com/imagen.jpg"
+                  className="rounded-3 p-2"
+                />
+              </Form.Group>
+
+              {/* Selección de Etiquetas */}
+              <Form.Group className="mb-4">
+                <Form.Label className="fw-bold d-block">Etiquetas</Form.Label>
+                {tags.length === 0 ? (
+                  <small className="text-muted">Cargando etiquetas...</small>
+                ) : (
+                  <div className="d-flex flex-wrap gap-2 mt-2">
+                    {tags.map((tag) => {
+                      const isSelected = selectedTags.includes(tag.id);
+                      return (
+                        <div
+                          key={tag.id}
+                          onClick={() => handleTagToggle(tag.id)}
+                          className={`px-3 py-2 rounded-3 border cursor-pointer user-select-none transition-all ${
+                            isSelected
+                              ? "bg-primary text-white border-primary fw-bold shadow-sm"
+                              : "bg-light text-dark border-secondary-subtle"
+                          }`}
+                          style={{ cursor: "pointer", fontSize: "0.9rem" }}
+                        >
+                          #{tag.name}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </Form.Group>
+
+              {/* Mensaje de error */}
+              {error && (
+                <Alert variant="danger" className="py-2 text-center fw-bold">
+                  {error}
+                </Alert>
+              )}
+
+              {/* Botón de envío */}
+              <div className="d-grid mt-4">
+                <Button
+                  type="submit"
+                  className="postButton py-2 fs-6"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <Spinner animation="border" size="sm" className="me-2" />
+                      Publicando...
+                    </>
+                  ) : (
+                    "Publicar"
+                  )}
+                </Button>
+              </div>
+            </Form>
           </div>
-        </div>
-
-        {error && <p role="alert" style={{ color: "red" }}>{error}</p>}
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Publicando..." : "Publicar"}
-        </button>
-      </form>
-    </main>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
