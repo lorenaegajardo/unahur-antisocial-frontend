@@ -4,6 +4,8 @@ import { obtenerPostPorId } from "../services/posts";
 import { useEffect, useState } from "react";
 import type { Post } from "../types";
 import PostCard from "../components/PostCard";
+import CommentForm from "../components/CommentForm";
+import CommentList from "../components/CommentList";
 
 function DetallePost() {
   const { id } = useParams()
@@ -11,6 +13,7 @@ function DetallePost() {
   const [post, setPost] = useState<Post | null>()
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(true)
+  const [actualizacion, setActualizacion] = useState(0)
 
   useEffect(() => {
     (async () => {
@@ -66,6 +69,8 @@ function DetallePost() {
         Volver al inicio
       </Button>
       <PostCard post={post} isExpanded={true} />
+      <CommentForm postId={postId} onCommentAdded={() => { setActualizacion(actualizacion + 1) }} />
+      <CommentList postId={postId} actualizacion={actualizacion} />
     </Container>
   );
 }

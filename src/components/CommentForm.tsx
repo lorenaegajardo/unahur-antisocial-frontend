@@ -44,7 +44,7 @@ function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          text: text.trim(),
+          content: text.trim(),
           postId: postId,
           userId: user.id, // ID del usuario actual sacado del contexto
         }),
