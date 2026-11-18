@@ -1,13 +1,11 @@
-// Lista de comentarios de una publicación.
-// Gaby implementará la consulta a la API
-// y mostrará los comentarios correspondientes.
 
 import { useEffect, useState } from "react";
+import { Spinner } from "react-bootstrap";
 import { API_URL } from "../services/api";
-import type { Comment } from "../types/index"
+import type { Comment } from "../types/index";
 
 interface CommentListProps {
-  postId: number; // Recibe el ID de la publicación para saber qué comentarios buscar
+  postId: number;
   actualizacion: number;
 }
 
@@ -16,13 +14,16 @@ function CommentList({ postId, actualizacion }: CommentListProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // useEffect se ejecuta cuando el componente se carga o cuando cambia el postId
+  // Carga los comentarios y actualiza la lista cuando es necesario.
   useEffect(() => {
     const fetchComments = async () => {
       try {
         setLoading(true);
-        // Consultamos a la API los comentarios visibles de este post (según consigna)
-        const response = await fetch(`${API_URL}/comments/post/${postId}`);
+        setError("");
+
+        const response = await fetch(
+          `${API_URL}/comments/post/${postId}`
+        );
 
         if (!response.ok) {
           throw new Error("No se pudieron cargar los comentarios.");
@@ -40,19 +41,37 @@ function CommentList({ postId, actualizacion }: CommentListProps) {
     fetchComments();
   }, [postId, actualizacion]);
 
-  if (loading) return <p>Cargando comentarios...</p>;
-  if (error) return <p role="alert" style={{ color: "red" }}>{error}</p>;
-
   return (
-    <section>
-      <h3>Comentarios</h3>
-      {comments.length === 0 ? (
-        <p>No hay comentarios todavía. ¡Sé el primero en comentar!</p>
+    <section className="commentSection">
+      <h3 className="commentTitle">
+        Comentarios
+        {!loading && !error && (
+          <span className="commentCount">{comments.length}</span>
+        )}
+      </h3>
+
+      {loading ? (
+        <div className="d-flex align-items-center gap-2">
+          <Spinner animation="border" size="sm" />
+          <span>Cargando comentarios...</span>
+        </div>
+      ) : error ? (
+        <p role="alert" className="text-danger mb-0">
+          {error}
+        </p>
+      ) : comments.length === 0 ? (
+        <p className="commentEmpty mb-0">
+          No hay comentarios todavía. ¡Sé el primero en comentar!
+        </p>
       ) : (
-        <ul>
+        <ul className="commentList">
           {comments.map((comment) => (
-            <li key={comment.id}>
-              <p>{comment.content}</p>
+            <li key={comment.id} className="commentItem">
+              <div className="commentAvatar">
+                <span aria-hidden="true">C</span>
+              </div>
+
+              <p className="commentText">{comment.content}</p>
             </li>
           ))}
         </ul>
@@ -62,6 +81,3 @@ function CommentList({ postId, actualizacion }: CommentListProps) {
 }
 
 export default CommentList;
-
-
-

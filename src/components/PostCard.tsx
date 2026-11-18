@@ -50,7 +50,12 @@ function PostCard({ post, isExpanded = false }: PostCardProps) {
       {!isExpanded &&
         <Card.Body className="pt-2 d-flex justify-content-between border-top" >
           <Button as={Link as any} to={`/post/${post.id}`} className="d-flex postButton">
-            <img src={comment} style={{ width: "1.5rem" }} alt="Logo comentario" />
+            <img
+              src={comment}
+              className="commentIcon"
+              alt=""
+              aria-hidden="true"
+              />
             <Card.Text className="mx-1">{comentarios?.length}</Card.Text>
           </Button>
           <Button as={Link as any} to={`/post/${post.id}`} className="postButton">

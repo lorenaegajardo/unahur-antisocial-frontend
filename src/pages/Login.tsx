@@ -1,15 +1,10 @@
-// Página de inicio de sesión.
-// Yo aca implementaré el formulario y la validación del usuario.
-
 
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Container, Card, Form, Button, Alert, Spinner } from "react-bootstrap";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../services/api";
 import type { User } from "../types";
-
-// Formulario de login simulado.
-// Verifica que el usuario exista en la API y utiliza la contraseña fija de la consigna.
 
 function Login() {
   const [nickName, setNickName] = useState("");
@@ -20,6 +15,7 @@ function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // Valida los datos y comprueba que el usuario exista.
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
@@ -37,7 +33,6 @@ function Login() {
     setLoading(true);
 
     try {
-      // Consultamos los usuarios registrados en el backend.
       const response = await fetch(`${API_URL}/users`);
 
       if (!response.ok) {
@@ -55,7 +50,7 @@ function Login() {
         return;
       }
 
-      // Guardamos la sesión mediante el contexto global.
+      // Guarda la sesión y vuelve al inicio.
       login(foundUser);
       navigate("/");
     } catch {
@@ -66,36 +61,90 @@ function Login() {
   };
 
   return (
-    <main>
-      <h1>Iniciar sesión</h1>
+    <main className="authPage">
+      <Container className="d-flex justify-content-center">
+        <Card className="authCard w-100">
+          <Card.Body className="p-4 p-md-5">
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="nickName">Nombre de usuario</label>
-          <input
-            id="nickName"
-            type="text"
-            value={nickName}
-            onChange={(event) => setNickName(event.target.value)}
-          />
-        </div>
+            <div className="text-center mb-4">
+              <div className="authLogo mx-auto mb-3">
+                U
+              </div>
 
-        <div>
-          <label htmlFor="password">Contraseña</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </div>
+              <h1 className="authTitle">
+                Iniciar sesión
+              </h1>
 
-        {error && <p role="alert">{error}</p>}
+              <p className="authSubtitle">
+                Bienvenido a UnaHur Anti-Social Net
+              </p>
+            </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Ingresando..." : "Ingresar"}
-        </button>
-      </form>
+            <Form onSubmit={handleSubmit} noValidate>
+              <Form.Group className="mb-3" controlId="nickName">
+                <Form.Label className="authLabel">
+                  Nombre de usuario
+                </Form.Label>
+
+                <Form.Control
+                  type="text"
+                  value={nickName}
+                  onChange={(event) => setNickName(event.target.value)}
+                  placeholder="Ingresá tu usuario"
+                  autoComplete="username"
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-4" controlId="password">
+                <Form.Label className="authLabel">
+                  Contraseña
+                </Form.Label>
+
+                <Form.Control
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Ingresá tu contraseña"
+                  autoComplete="current-password"
+                />
+              </Form.Group>
+
+              {error && (
+                <Alert variant="danger" role="alert">
+                  {error}
+                </Alert>
+              )}
+
+              <Button
+                type="submit"
+                className="postButton authSubmit w-100"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Spinner
+                      animation="border"
+                      size="sm"
+                      className="me-2"
+                    />
+                    Ingresando...
+                  </>
+                ) : (
+                  "Ingresar"
+                )}
+              </Button>
+            </Form>
+
+            <div className="authFooter text-center mt-4">
+              ¿Todavía no tenés una cuenta?{" "}
+              <Link to="/registro" className="authLink">
+                Registrate
+              </Link>
+            </div>
+
+          </Card.Body>
+        </Card>
+      </Container>
     </main>
   );
 }

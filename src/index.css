@@ -1,36 +1,115 @@
+/* =========================================
+   UNA HUR ANTI-SOCIAL NET
+   Estilos generales de la aplicación.
+
+   Se utilizan variables CSS para mantener
+   una paleta uniforme y facilitar el cambio
+   entre modo claro y modo oscuro.
+========================================= */
+
+/* Variables del tema claro.
+   :root permite reutilizar estos colores
+   en distintos componentes de la aplicación. */
+
+:root {
+  --app-bg: #e9eceb;
+  --app-surface: #ffffff;
+  --app-text: #29363b;
+  --app-muted: #68777c;
+  --app-primary: #315967;
+  --app-primary-hover: #244652;
+  --app-accent: #c6ae86;
+  --app-border: #e3e7e7;
+  --app-tag-bg: #e5eaeb;
+  --app-image-bg: #edf0ef;
+  --app-shadow: 0 5px 22px rgba(32, 40, 45, 0.07);
+}
+
+/* Estilos generales de la página.
+   Se establece la tipografía, el fondo
+   y una transición suave entre temas. */
+
 body {
   margin: 0;
-  background-color: #F0F0F0;
-  color: #333333;
-  font-family: Arial, sans-serif;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--app-bg);
+  color: var(--app-text);
+  font-family: "Segoe UI", Arial, sans-serif;
+  transition: background-color 0.25s, color 0.25s;
 }
+
+/* Permite que la aplicación ocupe como
+   mínimo toda la altura de la pantalla. */
+
+#root {
+  min-height: 100vh;
+}
+
+/* =========================================
+   ESTADOS DE CARGA Y ERROR
+========================================= */
+
+/* Centra los mensajes que se muestran
+   mientras se cargan datos o cuando ocurre
+   un error al consultar la API. */
 
 .estadoContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 50vw;
+  min-width: 0;
   min-height: 75vh;
 }
 
+/* =========================================
+   TARJETAS DE PUBLICACIONES
+========================================= */
+
+/* Estilo compartido por las tarjetas.
+   Incluye bordes redondeados, sombra
+   y una animación al pasar el cursor. */
+
 .postCard {
-  box-shadow: 0px 0px 5px 1px #d0d0d0;
+  background-color: var(--app-surface);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
   border-radius: 1rem;
-  background-color: #f9f9f9;
+  box-shadow: var(--app-shadow);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
+
+.postCard:hover {
+  box-shadow: 0 9px 28px rgba(32, 40, 45, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Representación visual del usuario.
+   Se utiliza como avatar circular. */
 
 .postUserLogo {
   width: 3rem;
   height: 3rem;
-  border-radius: 100%;
-  background-color: #333333
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--app-primary);
 }
 
+/* Etiquetas asociadas a las publicaciones.
+   Utilizan un fondo suave para diferenciarlas
+   del contenido principal. */
+
 .postTag {
-  background-color: #CBDDF6;
+  background-color: var(--app-tag-bg);
+  color: var(--app-primary);
   border-radius: 0.5rem;
 }
+
+/* Limita la descripción a cinco líneas
+   en las tarjetas del feed para mantener
+   una presentación ordenada. */
 
 .postCardText {
   display: -webkit-box;
@@ -40,45 +119,607 @@ body {
   overflow: hidden;
 }
 
+/* En el detalle de una publicación se
+   muestra el texto con mayor separación
+   para facilitar su lectura. */
+
 .postDetailText {
   font-size: 1.2rem;
   padding-bottom: 1rem;
+  line-height: 1.7;
 }
 
+/* =========================================
+   IMÁGENES DE PUBLICACIONES
+========================================= */
+
+/* Fondo del contenedor de imágenes. */
+
 .postImageContainer {
-  background-color: #EBEBEB;
+  background-color: var(--app-image-bg);
 }
+
+/* Mantiene las proporciones originales
+   de las imágenes sin deformarlas. */
 
 .postImage {
   height: 100%;
   max-height: 25rem;
   min-width: 0;
+  max-width: 100%;
   object-fit: contain;
 }
 
+/* Botones circulares utilizados para
+   navegar entre imágenes cuando corresponda. */
+
 .postImageButton {
   font-weight: 700;
-  border-radius: 100%;
+  border-radius: 50%;
   margin-left: 0.2rem;
   margin-right: 0.2rem;
 }
 
+/* =========================================
+   BOTONES DE PUBLICACIONES
+========================================= */
+
+/* Botones principales con el color
+   azul petróleo definido en las variables. */
+
 .postButton,
 .postButton:focus {
-  font-weight: 700;
-  color: #000000;
-  background-color: #73A8E7;
-  border-color: #BAD1F3;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: var(--app-primary);
+  border-color: var(--app-primary);
+  border-radius: 0.65rem;
   transition: 0.2s ease-in-out;
 }
 
+/* Cambio de color al pasar el cursor. */
+
 .postButton:hover {
-  color: #030911;
-  background-color: #CBDDF6;
+  color: #ffffff;
+  background-color: var(--app-primary-hover);
+  border-color: var(--app-primary-hover);
 }
+
+/* Estado del botón mientras se presiona. */
 
 .postButton:active:hover,
 .postButton:active:focus {
   color: #ffffff;
-  background-color: #528BE0;
+  background-color: #203e49;
+  border-color: #203e49;
+}
+
+/* =========================================
+   FORMULARIOS
+========================================= */
+
+/* Personaliza los campos de entrada y
+   selectores de React Bootstrap. */
+
+.form-control,
+.form-select {
+  border-radius: 0.65rem;
+  border-color: var(--app-border);
+}
+
+/* Resalta el campo seleccionado para
+   indicar dónde está escribiendo el usuario. */
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 0.2rem rgba(49, 89, 103, 0.14);
+}
+
+/* Transición visual para los enlaces. */
+
+a {
+  transition: color 0.2s ease;
+}
+
+/* =========================================
+   DISEÑO RESPONSIVE
+========================================= */
+
+/* Media query: adapta tamaños y espacios
+   cuando la pantalla tiene 576 px o menos,
+   como ocurre en muchos celulares. */
+
+@media (max-width: 576px) {
+  .postDetailText {
+    font-size: 1rem;
+  }
+
+  .postCard {
+    border-radius: 0.85rem;
+  }
+
+  .estadoContainer {
+    min-height: 65vh;
+  }
+}
+
+/* =========================================
+   MODO OSCURO
+========================================= */
+
+/* Cuando el elemento HTML tenga el atributo
+   data-bs-theme="dark", se reemplazarán
+   las variables del tema claro.
+
+   Este atributo también es reconocido por
+   Bootstrap 5.3 para adaptar sus componentes.
+
+   El botón para activar el tema oscuro
+   se incorporará posteriormente. */
+
+[data-bs-theme="dark"] {
+  --app-bg: #20282d;
+  --app-surface: #2d383e;
+  --app-text: #f0f2f1;
+  --app-muted: #b6c0c3;
+  --app-primary: #82aebc;
+  --app-primary-hover: #6996a5;
+  --app-accent: #c6ae86;
+  --app-border: #455158;
+  --app-tag-bg: #394c54;
+  --app-image-bg: #263238;
+  --app-shadow: 0 5px 22px rgba(0, 0, 0, 0.18);
+}
+
+/* En modo oscuro, los botones utilizan
+   texto oscuro sobre el azul claro para
+   conservar un buen contraste. */
+
+[data-bs-theme="dark"] .postButton,
+[data-bs-theme="dark"] .postButton:focus {
+  color: #17262c;
+}
+
+[data-bs-theme="dark"] .postButton:hover {
+  color: #17262c;
+}
+
+/* Sombra más marcada para distinguir
+   las tarjetas del fondo oscuro. */
+
+[data-bs-theme="dark"] .postCard:hover {
+  box-shadow: 0 9px 28px rgba(0, 0, 0, 0.25);
+}
+
+/* Barra de navegación */
+.appNavbar {
+  background-color: var(--app-surface);
+  border-bottom: 1px solid var(--app-border);
+  box-shadow: var(--app-shadow);
+}
+
+/* Nombre de la aplicación */
+.appBrand,
+.appBrand:hover {
+  color: var(--app-text);
+}
+
+.appBrand span {
+  color: var(--app-primary);
+}
+
+/* Enlaces del menú */
+.appNavbar .appNavLink {
+  color: var(--app-text);
+}
+
+.appNavbar .appNavLink:hover,
+.appNavbar .appNavLink:focus {
+  color: var(--app-primary);
+}
+
+/* Botón para cambiar el tema */
+.themeButton {
+  border-radius: 0.65rem;
+  padding: 0.4rem 0.8rem;
+  white-space: nowrap;
+}
+
+/* Usuario conectado */
+.appUserName {
+  color: var(--app-text);
+}
+
+.appUserAvatar {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--app-primary);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Ajustes del menú en celulares */
+@media (max-width: 991px) {
+  .appNavbar .navbar-collapse {
+    padding-top: 1rem;
+  }
+
+  .appNavbar .navbar-nav {
+    align-items: stretch;
+  }
+
+  .appUserSection {
+    padding-top: 1rem;
+    border-top: 1px solid var(--app-border);
+  }
+}
+
+/* Ajustes del modo oscuro */
+[data-bs-theme="dark"] .appUserAvatar {
+  color: #17262c;
+}
+
+/* Secciones de comentarios */
+.commentSection {
+  background-color: var(--app-surface);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--app-shadow);
+}
+
+/* Títulos y cantidad de comentarios */
+.commentTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  color: var(--app-text);
+}
+
+.commentCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.8rem;
+  height: 1.8rem;
+  padding: 0 0.4rem;
+  border-radius: 50%;
+  background-color: var(--app-tag-bg);
+  color: var(--app-primary);
+  font-size: 0.85rem;
+}
+
+/* Campo para escribir comentarios */
+.commentTextarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 110px;
+  background-color: var(--app-surface);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
+  padding: 0.85rem;
+}
+
+.commentTextarea::placeholder {
+  color: var(--app-muted);
+}
+
+.commentSubmit {
+  padding: 0.65rem 1.25rem;
+}
+
+/* Lista de comentarios */
+.commentList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.commentItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem;
+  background-color: var(--app-bg);
+  border: 1px solid var(--app-border);
+  border-radius: 0.85rem;
+}
+
+.commentAvatar {
+  width: 2.2rem;
+  height: 2.2rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--app-primary);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.commentText {
+  margin: 0;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.commentEmpty {
+  color: var(--app-muted);
+}
+
+/* Ajustes para celulares */
+@media (max-width: 576px) {
+  .commentSection {
+    padding: 1rem;
+  }
+
+  .commentItem {
+    padding: 0.8rem;
+  }
+
+  .commentSubmit {
+    width: 100%;
+  }
+}
+
+/* Colores de los avatares en modo oscuro */
+[data-bs-theme="dark"] .commentAvatar {
+  color: #17262c;
+}
+
+/* Página de inicio de sesión */
+.authPage {
+  display: flex;
+  align-items: center;
+  min-height: 75vh;
+  padding: 2rem 0 4rem;
+}
+
+/* Tarjeta del formulario */
+.authCard {
+  max-width: 460px;
+  background-color: var(--app-surface);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
+  border-radius: 1.25rem;
+  box-shadow: var(--app-shadow);
+}
+
+/* Logo del formulario */
+.authLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background-color: var(--app-primary);
+  color: #ffffff;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* Títulos y textos */
+.authTitle {
+  color: var(--app-text);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.authSubtitle,
+.authFooter {
+  color: var(--app-muted);
+}
+
+.authLabel {
+  color: var(--app-text);
+  font-weight: 600;
+}
+
+/* Campos del formulario */
+.authCard .form-control {
+  padding: 0.8rem 1rem;
+  background-color: var(--app-surface);
+  color: var(--app-text);
+}
+
+.authCard .form-control::placeholder {
+  color: var(--app-muted);
+}
+
+/* Botón principal */
+.authSubmit {
+  padding: 0.8rem;
+  font-weight: 700;
+}
+
+/* Enlace al registro */
+.authLink {
+  color: var(--app-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.authLink:hover {
+  text-decoration: underline;
+}
+
+/* Ajustes para celulares */
+@media (max-width: 576px) {
+  .authPage {
+    padding: 1rem 0 3rem;
+  }
+
+  .authTitle {
+    font-size: 1.5rem;
+  }
+}
+
+/* Colores del logo en modo oscuro */
+[data-bs-theme="dark"] .authLogo {
+  color: #17262c;
+}
+
+/* Tarjetas de publicaciones del perfil */
+.userPostCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* Miniatura de la publicación */
+.userPostImage {
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0.8rem;
+  border: 1px solid var(--app-border);
+  background-color: var(--app-image-bg);
+}
+
+.userPostImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.userPostImage span {
+  color: var(--app-muted);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+/* Descripción de la publicación */
+.userPostContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.userPostDescription {
+  color: var(--app-text);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Botón para abrir la publicación */
+.userPostButton {
+  flex-shrink: 0;
+  padding: 0.6rem 1rem;
+}
+
+/* Ajustes para celulares */
+@media (max-width: 576px) {
+  .userPostCard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .userPostButton {
+    align-self: flex-end;
+  }
+}
+
+/* Tarjeta de información del perfil en modo oscuro */
+[data-bs-theme="dark"] .bg-white {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text);
+}
+
+/* Textos secundarios en modo oscuro */
+[data-bs-theme="dark"] .text-muted {
+  color: var(--app-muted) !important;
+}
+
+/* Formulario para crear publicaciones */
+.createPostCard {
+  background-color: var(--app-surface);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
+  border-radius: 1.25rem;
+  box-shadow: var(--app-shadow);
+}
+
+/* Título del formulario */
+.createPostTitle {
+  color: var(--app-text);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+/* Campos de descripción e imagen */
+.createPostCard .form-control {
+  background-color: var(--app-surface);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
+}
+
+.createPostCard .form-control::placeholder {
+  color: var(--app-muted);
+}
+
+/* Etiquetas disponibles */
+.createPostTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 0.7rem;
+  background-color: var(--app-tag-bg);
+  color: var(--app-text);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.createPostTag:hover {
+  border-color: var(--app-primary);
+}
+
+/* Etiquetas seleccionadas */
+.createPostTag.selected {
+  background-color: var(--app-primary);
+  border-color: var(--app-primary);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Adaptación al modo oscuro */
+[data-bs-theme="dark"] .createPostTag.selected {
+  color: #17262c;
+}
+
+/* Ícono de comentarios */
+.commentIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  filter: brightness(0) invert(1);
+}
+
+/* Ícono en modo oscuro */
+[data-bs-theme="dark"] .commentIcon {
+  filter: brightness(0) saturate(100%) invert(11%) sepia(15%) saturate(1081%) hue-rotate(153deg) brightness(95%) contrast(93%);
 }

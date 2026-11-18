@@ -1,5 +1,14 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Container,
+  Card,
+  Form,
+  Button,
+  Alert,
+  Spinner,
+} from "react-bootstrap";
 import { API_URL } from "../services/api";
 
 function Registro() {
@@ -11,13 +20,12 @@ function Registro() {
 
   const navigate = useNavigate();
 
-  // Cambiamos a 'event: any' para que VSC no muestre nada tachado
-  const handleSubmit = async (event: any) => {
+  // Valida los datos y registra al usuario.
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
     setSuccess("");
 
-    // 1. Validación local: Verificar que ambos campos estén completos
     if (!nickName.trim() || !email.trim()) {
       setError("Todos los campos son obligatorios.");
       return;
@@ -26,7 +34,6 @@ function Registro() {
     setLoading(true);
 
     try {
-      // 2. Envío de nickName y email a la API mediante POST /users
       const response = await fetch(`${API_URL}/users`, {
         method: "POST",
         headers: {
@@ -40,11 +47,13 @@ function Registro() {
 
       const data = await response.json();
 
-      // 3. Manejo de respuesta del servidor
       if (!response.ok) {
-        throw new Error(data.error || data.message || "No se pudo crear el usuario.");
+        throw new Error(
+          data.error || data.message || "No se pudo crear el usuario."
+        );
       }
 
+      // Muestra la confirmación y redirige al login.
       setSuccess("¡Usuario registrado con éxito! Redirigiendo al login...");
       setNickName("");
       setEmail("");
@@ -60,39 +69,94 @@ function Registro() {
   };
 
   return (
-    <main>
-      <h1>Registro de usuario</h1>
+    <main className="authPage">
+      <Container className="d-flex justify-content-center">
+        <Card className="authCard w-100">
+          <Card.Body className="p-4 p-md-5">
+            <div className="text-center mb-4">
+              <div className="authLogo mx-auto mb-3">
+                U
+              </div>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="nickName">Nombre de usuario (NickName)</label>
-          <input
-            id="nickName"
-            type="text"
-            value={nickName}
-            onChange={(event) => setNickName(event.target.value)}
-            placeholder="Ingresá tu nick"
-          />
-        </div>
+              <h1 className="authTitle">
+                Crear una cuenta
+              </h1>
 
-        <div>
-          <label htmlFor="email">Correo electrónico (Email)</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="ejemplo@correo.com"
-          />
-        </div>
+              <p className="authSubtitle">
+                Sumate a UnaHur Anti-Social Net
+              </p>
+            </div>
 
-        {error && <p role="alert" style={{ color: "red" }}>{error}</p>}
-        {success && <p style={{ color: "green" }}>{success}</p>}
+            <Form onSubmit={handleSubmit} noValidate>
+              <Form.Group className="mb-3" controlId="nickName">
+                <Form.Label className="authLabel">
+                  Nombre de usuario
+                </Form.Label>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Registrando..." : "Registrarse"}
-        </button>
-      </form>
+                <Form.Control
+                  type="text"
+                  value={nickName}
+                  onChange={(event) => setNickName(event.target.value)}
+                  placeholder="Elegí un nombre de usuario"
+                  autoComplete="username"
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-4" controlId="email">
+                <Form.Label className="authLabel">
+                  Correo electrónico
+                </Form.Label>
+
+                <Form.Control
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="ejemplo@correo.com"
+                  autoComplete="email"
+                />
+              </Form.Group>
+
+              {error && (
+                <Alert variant="danger" role="alert">
+                  {error}
+                </Alert>
+              )}
+
+              {success && (
+                <Alert variant="success" role="status">
+                  {success}
+                </Alert>
+              )}
+
+              <Button
+                type="submit"
+                className="postButton authSubmit w-100"
+                disabled={loading || Boolean(success)}
+              >
+                {loading ? (
+                  <>
+                    <Spinner
+                      animation="border"
+                      size="sm"
+                      className="me-2"
+                    />
+                    Registrando...
+                  </>
+                ) : (
+                  "Registrarse"
+                )}
+              </Button>
+            </Form>
+
+            <div className="authFooter text-center mt-4">
+              ¿Ya tenés una cuenta?{" "}
+              <Link to="/login" className="authLink">
+                Iniciá sesión
+              </Link>
+            </div>
+          </Card.Body>
+        </Card>
+      </Container>
     </main>
   );
 }

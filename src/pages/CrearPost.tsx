@@ -111,8 +111,10 @@ function CrearPost() {
     <Container className="mt-4 mb-5">
       <Row className="justify-content-center">
         <Col xs={12} md={10} lg={8}>
-          <div className="bg-white p-4 p-md-5 rounded-4 shadow-sm border">
-            <h2 className="fw-bold mb-4 text-center">Crear Nueva Publicación</h2>
+          <div className="createPostCard p-4 p-md-5">
+            <h2 className="createPostTitle text-center">
+              Crear nueva publicación
+            </h2>
 
             <Form onSubmit={handleSubmit}>
               {/* Campo Descripción */}
@@ -156,12 +158,10 @@ function CrearPost() {
                         <div
                           key={tag.id}
                           onClick={() => handleTagToggle(tag.id)}
-                          className={`px-3 py-2 rounded-3 border cursor-pointer user-select-none transition-all ${
-                            isSelected
-                              ? "bg-primary text-white border-primary fw-bold shadow-sm"
-                              : "bg-light text-dark border-secondary-subtle"
+                          className={`createPostTag user-select-none ${
+                            isSelected ? "selected" : ""
                           }`}
-                          style={{ cursor: "pointer", fontSize: "0.9rem" }}
+                          style={{ fontSize: "0.9rem" }}
                         >
                           #{tag.name}
                         </div>

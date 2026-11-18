@@ -1,14 +1,12 @@
-// Formulario para agregar comentarios.
-// Gaby implementará el campo de texto, las validaciones
-// y el envío del comentario a la API.
 
 import { useState, type FormEvent } from "react";
 import { API_URL } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { Button, Form, Spinner } from "react-bootstrap";
 
 interface CommentFormProps {
   postId: number;
-  onCommentAdded: () => void; // Función que avisa al componente padre que se creó un comentario para actualizar la lista
+  onCommentAdded: () => void;
 }
 
 function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
@@ -16,19 +14,18 @@ function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { user } = useAuth(); // Necesitamos saber quién está logueado para mandar su ID
+  const { user } = useAuth();
 
+  // Valida y envía el comentario a la API.
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
 
-    // 1. Validación: Campo obligatorio
     if (!text.trim()) {
       setError("El comentario no puede estar vacío.");
       return;
     }
 
-    // Seguridad extra: Verificar que esté logueado (aunque la ruta sea protegida)
     if (!user) {
       setError("Debes iniciar sesión para comentar.");
       return;
@@ -37,7 +34,6 @@ function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
     setLoading(true);
 
     try {
-      // 2. Envío mediante POST /comments (según consigna)
       const response = await fetch(`${API_URL}/comments`, {
         method: "POST",
         headers: {
@@ -46,7 +42,7 @@ function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
         body: JSON.stringify({
           content: text.trim(),
           postId: postId,
-          userId: user.id, // ID del usuario actual sacado del contexto
+          userId: user.id,
         }),
       });
 
@@ -54,10 +50,8 @@ function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
         throw new Error("No se pudo publicar el comentario.");
       }
 
-      // Limpiamos el campo de texto
+      // Limpia el formulario y actualiza los comentarios.
       setText("");
-
-      // 3. Ejecutamos la función que avisa al padre para que recargue la lista de comentarios
       onCommentAdded();
     } catch (err: any) {
       setError(err.message || "Error al conectar con el servidor.");
@@ -67,27 +61,49 @@ function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
   };
 
   return (
-    <section>
-      <h3>Agregar comentario</h3>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <textarea
+    <section className="commentSection mb-4">
+      <h3 className="commentTitle">Agregar comentario</h3>
+
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Control
+            as="textarea"
+            rows={4}
             value={text}
             onChange={(event) => setText(event.target.value)}
             placeholder="Escribí tu comentario..."
-            rows={3}
+            className="commentTextarea"
+            aria-label="Escribí tu comentario"
           />
-        </div>
+        </Form.Group>
 
-        {error && <p role="alert" style={{ color: "red" }}>{error}</p>}
+        {error && (
+          <p role="alert" className="text-danger small mb-3">
+            {error}
+          </p>
+        )}
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Enviando..." : "Comentar"}
-        </button>
-      </form>
+        <Button
+          type="submit"
+          className="postButton commentSubmit"
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <Spinner
+                animation="border"
+                size="sm"
+                className="me-2"
+              />
+              Enviando...
+            </>
+          ) : (
+            "Publicar comentario"
+          )}
+        </Button>
+      </Form>
     </section>
   );
 }
 
 export default CommentForm;
-
