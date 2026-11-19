@@ -1,4 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+
+import { Routes, Route, Link } from "react-router-dom";
+import { Button, Container } from "react-bootstrap";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -23,11 +25,30 @@ function App() {
         <Route path="/registro" element={<Registro />} />
         <Route path="/post/:id" element={<DetallePost />} />
 
-        {/* Rutas protegidas: mañana agregaremos la validación de sesión. */}
+        {/* Rutas protegidas: requieren iniciar sesión. */}
         <Route element={<ProtectedRoute />}>
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/crear-post" element={<CrearPost />} />
         </Route>
+
+        {/* Página no encontrada. */}
+        <Route
+          path="*"
+          element={
+            <Container className="mt-5 text-center">
+              <h2>Página no encontrada</h2>
+              <p>La dirección que ingresaste no existe.</p>
+
+              <Button
+                as={Link as any}
+                to="/"
+                className="postButton mt-3"
+              >
+                Volver al inicio
+              </Button>
+            </Container>
+          }
+        />
       </Routes>
     </>
   );

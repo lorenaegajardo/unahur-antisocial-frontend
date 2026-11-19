@@ -88,6 +88,7 @@ function Registro() {
             </div>
 
             <Form onSubmit={handleSubmit} noValidate>
+              {/* Nombre de usuario */}
               <Form.Group className="mb-3" controlId="nickName">
                 <Form.Label className="authLabel">
                   Nombre de usuario
@@ -102,6 +103,7 @@ function Registro() {
                 />
               </Form.Group>
 
+              {/* Correo electrónico */}
               <Form.Group className="mb-4" controlId="email">
                 <Form.Label className="authLabel">
                   Correo electrónico
@@ -116,6 +118,7 @@ function Registro() {
                 />
               </Form.Group>
 
+              {/* Mensajes de error y confirmación */}
               {error && (
                 <Alert variant="danger" role="alert">
                   {error}
@@ -128,6 +131,7 @@ function Registro() {
                 </Alert>
               )}
 
+              {/* Botón de registro */}
               <Button
                 type="submit"
                 className="postButton authSubmit w-100"
@@ -148,10 +152,18 @@ function Registro() {
               </Button>
             </Form>
 
+            {/* Acceso al inicio de sesión */}
             <div className="authFooter text-center mt-4">
               ¿Ya tenés una cuenta?{" "}
               <Link to="/login" className="authLink">
                 Iniciá sesión
+              </Link>
+            </div>
+
+            {/* Regresar al inicio */}
+            <div className="text-center mt-3">
+              <Link to="/" className="authLink">
+                Volver al inicio
               </Link>
             </div>
           </Card.Body>

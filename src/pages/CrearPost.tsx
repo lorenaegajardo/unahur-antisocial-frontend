@@ -1,8 +1,17 @@
+
 import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../services/api";
-import { Container, Row, Col, Form, Button, Spinner, Alert } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  Spinner,
+  Alert,
+} from "react-bootstrap";
 
 interface Tag {
   id: number;
@@ -20,11 +29,12 @@ function CrearPost() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 1. Cargamos el listado de etiquetas desde la API cuando se monta el componente
+  // Cargar las etiquetas disponibles desde la API.
   useEffect(() => {
     const fetchTags = async () => {
       try {
         const response = await fetch(`${API_URL}/tags`);
+
         if (response.ok) {
           const data = await response.json();
           setTags(data);
@@ -37,7 +47,7 @@ function CrearPost() {
     fetchTags();
   }, []);
 
-  // Manejar la selección/deselección de etiquetas
+  // Seleccionar o quitar etiquetas.
   const handleTagToggle = (tagId: number) => {
     if (selectedTags.includes(tagId)) {
       setSelectedTags(selectedTags.filter((id) => id !== tagId));
@@ -46,11 +56,12 @@ function CrearPost() {
     }
   };
 
+  // Crear una publicación.
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
 
-    // Validación: La descripción es obligatoria
+    // La descripción es obligatoria.
     if (!description.trim()) {
       setError("La descripción es obligatoria.");
       return;
@@ -64,7 +75,7 @@ function CrearPost() {
     setLoading(true);
 
     try {
-      // 2. Hacemos el POST /posts
+      // Crear la publicación en la API.
       const postResponse = await fetch(`${API_URL}/posts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -82,7 +93,7 @@ function CrearPost() {
       const newPost = await postResponse.json();
       const postId = newPost.id;
 
-      // 3. Si se ingresó una URL de imagen, hacemos el POST /postimages asociado
+      // Asociar la imagen si se ingresó una URL.
       if (imageUrl.trim() && postId) {
         const imageResponse = await fetch(`${API_URL}/postimages`, {
           method: "POST",
@@ -94,14 +105,20 @@ function CrearPost() {
         });
 
         if (!imageResponse.ok) {
-          console.error("La publicación se creó, pero hubo un error al asociar la imagen.");
+          console.error(
+            "La publicación se creó, pero hubo un error al asociar la imagen."
+          );
         }
       }
 
-      // 4. Redirigimos al perfil
+      // Ir al perfil después de publicar.
       navigate("/perfil");
-    } catch (err: any) {
-      setError(err.message || "Error al conectar con el servidor.");
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Error al conectar con el servidor."
+      );
     } finally {
       setLoading(false);
     }
@@ -117,11 +134,12 @@ function CrearPost() {
             </h2>
 
             <Form onSubmit={handleSubmit}>
-              {/* Campo Descripción */}
+              {/* Descripción */}
               <Form.Group className="mb-3" controlId="description">
                 <Form.Label className="fw-bold">
                   Descripción <span className="text-danger">*</span>
                 </Form.Label>
+
                 <Form.Control
                   as="textarea"
                   rows={4}
@@ -130,34 +148,52 @@ function CrearPost() {
                   placeholder="¿Qué estás pensando?"
                   className="rounded-3 p-3"
                   style={{ resize: "vertical" }}
+                  disabled={loading}
                 />
               </Form.Group>
 
-              {/* Campo URL de Imagen */}
+              {/* URL de imagen */}
               <Form.Group className="mb-4" controlId="imageUrl">
-                <Form.Label className="fw-bold">URL de imagen <span className="text-muted fw-normal">(opcional)</span></Form.Label>
+                <Form.Label className="fw-bold">
+                  URL de imagen{" "}
+                  <span className="text-muted fw-normal">
+                    (opcional)
+                  </span>
+                </Form.Label>
+
                 <Form.Control
                   type="url"
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
                   placeholder="https://ejemplo.com/imagen.jpg"
                   className="rounded-3 p-2"
+                  disabled={loading}
                 />
               </Form.Group>
 
-              {/* Selección de Etiquetas */}
+              {/* Selección de etiquetas */}
               <Form.Group className="mb-4">
-                <Form.Label className="fw-bold d-block">Etiquetas</Form.Label>
+                <Form.Label className="fw-bold d-block">
+                  Etiquetas
+                </Form.Label>
+
                 {tags.length === 0 ? (
-                  <small className="text-muted">Cargando etiquetas...</small>
+                  <small className="text-muted">
+                    Cargando etiquetas...
+                  </small>
                 ) : (
                   <div className="d-flex flex-wrap gap-2 mt-2">
                     {tags.map((tag) => {
                       const isSelected = selectedTags.includes(tag.id);
+
                       return (
                         <div
                           key={tag.id}
-                          onClick={() => handleTagToggle(tag.id)}
+                          onClick={() => {
+                            if (!loading) {
+                              handleTagToggle(tag.id);
+                            }
+                          }}
                           className={`createPostTag user-select-none ${
                             isSelected ? "selected" : ""
                           }`}
@@ -173,21 +209,38 @@ function CrearPost() {
 
               {/* Mensaje de error */}
               {error && (
-                <Alert variant="danger" className="py-2 text-center fw-bold">
+                <Alert
+                  variant="danger"
+                  className="py-2 text-center fw-bold"
+                >
                   {error}
                 </Alert>
               )}
 
-              {/* Botón de envío */}
-              <div className="d-grid mt-4">
+              {/* Botones para cancelar o publicar */}
+              <div className="d-flex flex-column flex-sm-row gap-3 mt-4">
+                <Button
+                  type="button"
+                  variant="outline-secondary"
+                  className="py-2 flex-fill"
+                  onClick={() => navigate("/")}
+                  disabled={loading}
+                >
+                  Cancelar
+                </Button>
+
                 <Button
                   type="submit"
-                  className="postButton py-2 fs-6"
+                  className="postButton py-2 fs-6 flex-fill"
                   disabled={loading}
                 >
                   {loading ? (
                     <>
-                      <Spinner animation="border" size="sm" className="me-2" />
+                      <Spinner
+                        animation="border"
+                        size="sm"
+                        className="me-2"
+                      />
                       Publicando...
                     </>
                   ) : (
