@@ -327,10 +327,10 @@ El código fuente está disponible en GitHub y puede ejecutarse localmente sigui
 
 El proyecto fue desarrollado de manera grupal, distribuyendo las tareas entre sus integrantes.
 
-- **Lorena:** configuración inicial del frontend, rutas, autenticación, navegación, integración, filtros, paginación, mejoras de experiencia de usuario y documentación.
-- **Elías:** página principal, tarjetas de publicaciones, detalle de publicaciones, imágenes y etiquetas.
-- **Gaby:** registro de usuarios, comentarios, carga de múltiples imágenes y contador de comentarios en las publicaciones del perfil.
-- **Cristian:** perfil de usuario, creación de publicaciones, imágenes, etiquetas y estilos de navegación.
+- **Lorena Gajardo:** configuración inicial del frontend, rutas, autenticación, navegación, integración, filtros, paginación, mejoras de experiencia de usuario y documentación.
+- **Elías Cardozo:** página principal, tarjetas de publicaciones, detalle de publicaciones, imágenes y etiquetas.
+- **Gabriela Da Silva:** registro de usuarios, comentarios, carga de múltiples imágenes y contador de comentarios en las publicaciones del perfil.
+- **Cristian Nuñez:** perfil de usuario, creación de publicaciones, imágenes, etiquetas y estilos de navegación.
 
 El código se integró mediante Git y GitHub.
 
