@@ -5,9 +5,11 @@ import { obtenerPosts } from "../services/posts";
 import { useEffect, useState } from "react";
 import type { Post, Tag } from "../types/index";
 
+const POSTS_POR_PAGINA = 5;
+
 function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [postsVisibles, setPostsVisibles] = useState(5);
+  const [paginaActual, setPaginaActual] = useState(1);
   const [etiquetaSeleccionada, setEtiquetaSeleccionada] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -25,7 +27,7 @@ function Home() {
     })();
   }, []);
 
-  // Obtener las etiquetas de las publicaciones sin repetirlas.
+  // Obtener las etiquetas sin repetirlas.
   const etiquetas: Tag[] = Array.from(
     new Map(
       posts
@@ -34,7 +36,7 @@ function Home() {
     ).values()
   ).sort((a, b) => a.name.localeCompare(b.name));
 
-  // Filtrar las publicaciones por la etiqueta elegida.
+  // Filtrar las publicaciones por etiqueta.
   const postsFiltrados = etiquetaSeleccionada
     ? posts.filter((post) =>
         post.Tags?.some(
@@ -43,10 +45,28 @@ function Home() {
       )
     : posts;
 
-  // Al cambiar el filtro, volver a mostrar los primeros 5 posts.
+  // Calcular las páginas y las publicaciones visibles.
+  const totalPaginas = Math.ceil(
+    postsFiltrados.length / POSTS_POR_PAGINA
+  );
+
+  const inicio = (paginaActual - 1) * POSTS_POR_PAGINA;
+  const fin = inicio + POSTS_POR_PAGINA;
+
+  const postsPaginados = postsFiltrados.slice(inicio, fin);
+
+  // Cambiar el filtro y regresar a la primera página.
   const cambiarEtiqueta = (valor: string) => {
     setEtiquetaSeleccionada(valor);
-    setPostsVisibles(5);
+    setPaginaActual(1);
+  };
+
+  // Cambiar de página.
+  const cambiarPagina = (pagina: number) => {
+    if (pagina < 1 || pagina > totalPaginas) return;
+
+    setPaginaActual(pagina);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (loading) {
@@ -97,7 +117,7 @@ function Home() {
         </Col>
       </Row>
 
-      {/* Publicaciones filtradas */}
+      {/* Publicaciones de la página seleccionada */}
       <Row className="d-flex justify-content-center">
         {postsFiltrados.length === 0 ? (
           <Col xs={10} md={8} className="px-0">
@@ -106,7 +126,7 @@ function Home() {
             </div>
           </Col>
         ) : (
-          postsFiltrados.slice(0, postsVisibles).map((p) => (
+          postsPaginados.map((p) => (
             <Col xs={10} md={8} key={p.id} className="px-0">
               <PostCard post={p} />
             </Col>
@@ -114,17 +134,49 @@ function Home() {
         )}
       </Row>
 
-      {/* Mantener el botón para cargar más publicaciones */}
-      {postsFiltrados.length > postsVisibles && (
-        <div className="d-flex justify-content-center pt-2 pb-4">
-          <Button
-            variant="outline-dark"
-            size="lg"
-            className="fw-bold"
-            onClick={() => setPostsVisibles((prev) => prev + 5)}
-          >
-            Cargar más posts
-          </Button>
+      {/* Navegación entre páginas */}
+      {totalPaginas > 1 && (
+        <div className="paginacionPosts">
+          <p className="paginacionInfo">
+            Página {paginaActual} de {totalPaginas}
+          </p>
+
+          <div className="paginacionBotones">
+            <Button
+              className="paginacionBoton"
+              disabled={paginaActual === 1}
+              onClick={() => cambiarPagina(paginaActual - 1)}
+            >
+              Anterior
+            </Button>
+
+            {Array.from(
+              { length: totalPaginas },
+              (_, index) => index + 1
+            ).map((pagina) => (
+              <Button
+                key={pagina}
+                className={`paginacionBoton ${
+                  paginaActual === pagina ? "activa" : ""
+                }`}
+                onClick={() => cambiarPagina(pagina)}
+                aria-label={`Ir a la página ${pagina}`}
+                aria-current={
+                  paginaActual === pagina ? "page" : undefined
+                }
+              >
+                {pagina}
+              </Button>
+            ))}
+
+            <Button
+              className="paginacionBoton"
+              disabled={paginaActual === totalPaginas}
+              onClick={() => cambiarPagina(paginaActual + 1)}
+            >
+              Siguiente
+            </Button>
+          </div>
         </div>
       )}
     </Container>
