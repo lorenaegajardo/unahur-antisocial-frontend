@@ -2,17 +2,18 @@
 
 ## Descripción del proyecto
 
-UnaHur Anti-Social Net es una aplicación web desarrollada como Trabajo Práctico 2 de la materia Construcción de Interfaces de Usuario (CIU).
+UnaHur Anti-Social Net es una aplicación web desarrollada como Trabajo Práctico 2 de la materia Construcción de Interfaces de Usuario (CIU), de la Universidad Nacional de Hurlingham (UNAHUR).
 
-El proyecto consiste en una red social donde los usuarios pueden registrarse, iniciar sesión, visualizar publicaciones, consultar sus detalles, comentar y administrar sus propias publicaciones.
+El proyecto consiste en una red social donde los usuarios pueden registrarse, iniciar sesión, visualizar publicaciones, consultar sus detalles, comentar y crear sus propias publicaciones.
 
 El frontend fue desarrollado con React, TypeScript y Vite, utilizando React Bootstrap para los componentes visuales.
 
-La aplicación consume una API REST proporcionada por la cátedra, desarrollada con Node.js y Express.
+La aplicación consume una API REST proporcionada por la cátedra, desarrollada con Node.js y Express, que utiliza una base de datos SQLite.
 
 ## Tecnologías utilizadas
 
-**Frontend**
+### Frontend
+
 - React
 - TypeScript
 - Vite
@@ -21,12 +22,15 @@ La aplicación consume una API REST proporcionada por la cátedra, desarrollada 
 - Bootstrap
 - CSS
 
-**Backend**
+### Backend
+
 - Node.js
 - Express
+- SQLite
 - API REST proporcionada por la cátedra
 
-**Herramientas**
+### Herramientas
+
 - Visual Studio Code
 - Git
 - GitHub
@@ -48,19 +52,27 @@ La aplicación consume una API REST proporcionada por la cátedra, desarrollada 
 - Visualización de publicaciones en la página principal.
 - Consulta del detalle de una publicación.
 - Creación de publicaciones para usuarios autenticados.
-- Asociación de imágenes y etiquetas a las publicaciones.
+- Asociación de etiquetas a las publicaciones.
+- Incorporación de múltiples imágenes mediante URLs.
+- Posibilidad de agregar o quitar campos de imágenes antes de publicar.
+- Visualización de varias imágenes mediante un carrusel.
 - Visualización de las publicaciones del usuario en su perfil.
+- Miniatura de la primera imagen de cada publicación en el perfil.
 
 ### Comentarios
 
 - Visualización de comentarios de las publicaciones.
 - Creación de comentarios desde el detalle de una publicación.
+- Actualización de la lista de comentarios.
+- Visualización de la cantidad de comentarios en el detalle de una publicación.
+- Contador de comentarios en las publicaciones del perfil.
 
 ### Navegación y diseño
 
 - Barra de navegación adaptable a distintos tamaños de pantalla.
 - Accesos a inicio, perfil, creación de publicaciones, registro e inicio de sesión.
 - Botones para regresar a la página principal.
+- Botón para cancelar la creación de una publicación.
 - Página de error para rutas inexistentes.
 - Diseño responsive.
 - Modo claro y oscuro.
@@ -203,8 +215,14 @@ Entre los recursos utilizados se encuentran:
 - `/posts`: publicaciones.
 - `/tags`: etiquetas.
 - `/postimages`: imágenes asociadas a publicaciones.
+- `/postimages/post/:id`: imágenes de una publicación.
+- `/comments/post/:id`: comentarios de una publicación.
 
-Los comentarios se consultan y gestionan mediante los servicios correspondientes de la API.
+Para crear una publicación, el frontend envía la descripción, el identificador del usuario y las etiquetas seleccionadas.
+
+Cuando se agregan imágenes, cada URL se asocia a la publicación mediante una solicitud a `/postimages`.
+
+Para mostrar el contador de comentarios en el perfil, se consultan los comentarios de cada publicación y se obtiene su cantidad.
 
 Para el funcionamiento local, la API debe estar disponible en el puerto configurado en el frontend.
 
@@ -216,10 +234,12 @@ El código fuente se encuentra principalmente en la carpeta `src`.
 
 Contiene componentes reutilizables de la interfaz, como:
 
-- Barra de navegación.
-- Protección de rutas.
-- Tarjetas de publicaciones.
-- Componentes de comentarios.
+- `Navbar`: barra de navegación.
+- `ProtectedRoute`: protección de rutas.
+- `PostCard`: tarjeta de publicación.
+- `UserPostCard`: publicación del perfil con imagen y contador de comentarios.
+- `CommentForm`: formulario para agregar comentarios.
+- `CommentList`: listado de comentarios.
 
 ### `src/pages`
 
@@ -228,13 +248,17 @@ Contiene las páginas principales de la aplicación:
 - `Home`: listado de publicaciones, filtros y paginación.
 - `Login`: inicio de sesión.
 - `Registro`: registro de usuarios.
-- `DetallePost`: detalle de una publicación y comentarios.
+- `DetallePost`: detalle de una publicación, imágenes y comentarios.
 - `Perfil`: información del usuario y sus publicaciones.
-- `CrearPost`: formulario de creación de publicaciones.
+- `CrearPost`: formulario de creación de publicaciones con etiquetas y múltiples imágenes.
 
 ### `src/context`
 
 Contiene el contexto de autenticación (`AuthContext`), que permite compartir la información de la sesión entre los componentes.
+
+### `src/services`
+
+Contiene la configuración utilizada para comunicarse con la API.
 
 ### `src/App.tsx`
 
@@ -254,24 +278,50 @@ Durante el desarrollo se realizaron pruebas manuales para verificar:
 - Acceso a rutas protegidas.
 - Visualización y detalle de publicaciones.
 - Creación de publicaciones.
+- Carga de múltiples imágenes mediante URLs.
+- Visualización y navegación entre imágenes.
 - Visualización y creación de comentarios.
+- Contador de comentarios en el detalle de publicaciones.
+- Contador de comentarios en las publicaciones del perfil.
 - Filtrado por etiquetas.
 - Paginación.
 - Navegación entre pantallas.
 - Cambio entre modo claro y oscuro.
 - Adaptación visual a distintos tamaños de pantalla.
 
-También se verificó la compilación del frontend mediante:
+### Prueba de múltiples imágenes
+
+Se creó una publicación con dos URLs de imágenes.
+
+Se verificó que ambas se guardaran correctamente y que fuera posible visualizarlas y navegar entre ellas mediante el carrusel.
+
+### Prueba del contador de comentarios
+
+Se agregaron dos comentarios a una publicación de prueba.
+
+Se verificó que:
+
+- Los dos comentarios aparecieran en el detalle.
+- El contador del detalle mostrara 2.
+- El contador de la publicación en el perfil también mostrara 2.
+
+### Compilación
+
+Se verificó la compilación del frontend mediante:
 
 ```bash
 npm run build
 ```
 
+La compilación finalizó correctamente, sin errores de TypeScript ni de Vite.
+
 ## Estado de la publicación
 
-El proyecto funciona en un entorno de desarrollo local.
+El proyecto funciona correctamente en el entorno de desarrollo local utilizado para las pruebas.
 
 La publicación pública del frontend y el alojamiento del backend y su base de datos se encuentran pendientes de definición según las indicaciones de la cátedra.
+
+El código fuente está disponible en GitHub y puede ejecutarse localmente siguiendo las instrucciones de este documento.
 
 ## Trabajo en equipo
 
@@ -279,8 +329,23 @@ El proyecto fue desarrollado de manera grupal, distribuyendo las tareas entre su
 
 - **Lorena:** configuración inicial del frontend, rutas, autenticación, navegación, integración, filtros, paginación, mejoras de experiencia de usuario y documentación.
 - **Elías:** página principal, tarjetas de publicaciones, detalle de publicaciones, imágenes y etiquetas.
-- **Gaby:** registro de usuarios y comentarios.
+- **Gaby:** registro de usuarios, comentarios, carga de múltiples imágenes y contador de comentarios en las publicaciones del perfil.
 - **Cristian:** perfil de usuario, creación de publicaciones, imágenes, etiquetas y estilos de navegación.
 
 El código se integró mediante Git y GitHub.
 
+## Repositorios
+
+**Frontend:**
+
+https://github.com/lorenaegajardo/unahur-antisocial-frontend
+
+**Backend proporcionado por la cátedra:**
+
+https://github.com/lucasfigarola/backend-api
+
+---
+
+Trabajo Práctico 2 — Construcción de Interfaces de Usuario (CIU)
+
+Universidad Nacional de Hurlingham (UNAHUR)
