@@ -1,4 +1,3 @@
-
 import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -11,6 +10,7 @@ import {
   Button,
   Spinner,
   Alert,
+  InputGroup,
 } from "react-bootstrap";
 
 interface Tag {
@@ -23,7 +23,7 @@ function CrearPost() {
   const navigate = useNavigate();
 
   const [description, setDescription] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([""]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [error, setError] = useState("");
@@ -56,6 +56,27 @@ function CrearPost() {
     }
   };
 
+  // Actualizar el valor de un campo de URL específico.
+  const handleImageUrlChange = (index: number, value: string) => {
+    const updatedUrls = [...imageUrls];
+    updatedUrls[index] = value;
+    setImageUrls(updatedUrls);
+  };
+
+  // Agregar un nuevo campo de URL vacío.
+  const handleAddImageField = () => {
+    setImageUrls([...imageUrls, ""]);
+  };
+
+  // Eliminar un campo de URL específico.
+  const handleRemoveImageField = (index: number) => {
+    if (imageUrls.length === 1) {
+      setImageUrls([""]);
+      return;
+    }
+    setImageUrls(imageUrls.filter((_, i) => i !== index));
+  };
+
   // Crear una publicación.
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -75,7 +96,7 @@ function CrearPost() {
     setLoading(true);
 
     try {
-      // Crear la publicación en la API.
+      // 1. Crear la publicación en la API.
       const postResponse = await fetch(`${API_URL}/posts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -93,25 +114,31 @@ function CrearPost() {
       const newPost = await postResponse.json();
       const postId = newPost.id;
 
-      // Asociar la imagen si se ingresó una URL.
-      if (imageUrl.trim() && postId) {
-        const imageResponse = await fetch(`${API_URL}/postimages`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            url: imageUrl.trim(),
-            postId: postId,
-          }),
-        });
+      // 2. Filtrar URLs no vacías y asociar cada imagen mediante POST /postimages.
+      const validUrls = imageUrls
+        .map((url) => url.trim())
+        .filter((url) => url !== "");
 
-        if (!imageResponse.ok) {
-          console.error(
-            "La publicación se creó, pero hubo un error al asociar la imagen."
-          );
-        }
+      if (validUrls.length > 0 && postId) {
+        await Promise.all(
+          validUrls.map(async (url) => {
+            const imageResponse = await fetch(`${API_URL}/postimages`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                url,
+                postId,
+              }),
+            });
+
+            if (!imageResponse.ok) {
+              console.error(`Error al asociar la imagen: ${url}`);
+            }
+          })
+        );
       }
 
-      // Ir al perfil después de publicar.
+      // 3. Ir al perfil después de publicar.
       navigate("/perfil");
     } catch (err: unknown) {
       setError(
@@ -152,23 +179,52 @@ function CrearPost() {
                 />
               </Form.Group>
 
-              {/* URL de imagen */}
-              <Form.Group className="mb-4" controlId="imageUrl">
+              {/* URLs de imágenes dinámicas */}
+              <Form.Group className="mb-4">
                 <Form.Label className="fw-bold">
-                  URL de imagen{" "}
-                  <span className="text-muted fw-normal">
-                    (opcional)
-                  </span>
+                  URLs de imágenes{" "}
+                  <span className="text-muted fw-normal">(opcional)</span>
                 </Form.Label>
 
-                <Form.Control
-                  type="url"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://ejemplo.com/imagen.jpg"
-                  className="rounded-3 p-2"
+                <div className="d-flex flex-column gap-2">
+                  {imageUrls.map((url, index) => (
+                    <InputGroup key={index}>
+                      <Form.Control
+                        type="url"
+                        value={url}
+                        onChange={(e) =>
+                          handleImageUrlChange(index, e.target.value)
+                        }
+                        placeholder={`https://ejemplo.com/imagen-${index + 1}.jpg`}
+                        className="p-2"
+                        disabled={loading}
+                        aria-label={`URL de imagen ${index + 1}`}
+                      />
+                      {imageUrls.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="outline-danger"
+                          onClick={() => handleRemoveImageField(index)}
+                          disabled={loading}
+                          title="Quitar imagen"
+                        >
+                          ✕
+                        </Button>
+                      )}
+                    </InputGroup>
+                  ))}
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline-dark"
+                  size="sm"
+                  className="mt-2 fw-semibold"
+                  onClick={handleAddImageField}
                   disabled={loading}
-                />
+                >
+                  + Agregar otra imagen
+                </Button>
               </Form.Group>
 
               {/* Selección de etiquetas */}
