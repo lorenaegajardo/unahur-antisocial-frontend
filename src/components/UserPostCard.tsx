@@ -16,6 +16,7 @@ interface UserPostCardProps {
 
 export default function UserPostCard({ post }: UserPostCardProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [commentCount, setCommentCount] = useState<number>(0);
 
   // Busca la primera imagen de la publicación.
   useEffect(() => {
@@ -36,10 +37,28 @@ export default function UserPostCard({ post }: UserPostCardProps) {
       .catch(() => {});
   }, [post.id]);
 
+  // Busca la cantidad de comentarios de la publicación.
+  useEffect(() => {
+    setCommentCount(0);
+
+    fetch(`${API_URL}/comments/post/${post.id}`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("No se pudieron cargar los comentarios.");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setCommentCount(data.length);
+        }
+      })
+      .catch(() => {});
+  }, [post.id]);
+
   return (
     <article className="postCard userPostCard p-3 p-md-4">
       <div className="d-flex align-items-center gap-3 flex-grow-1">
-
         {/* Miniatura de la publicación */}
         <div className="userPostImage">
           {imageUrl ? (
@@ -52,11 +71,15 @@ export default function UserPostCard({ post }: UserPostCardProps) {
           )}
         </div>
 
-        {/* Descripción */}
+        {/* Descripción y contador de comentarios */}
         <div className="userPostContent">
-          <p className="userPostDescription mb-0">
+          <p className="userPostDescription mb-1">
             {post.description}
           </p>
+
+          <small className="text-muted">
+            Comentarios: <span className="commentCount">{commentCount}</span>
+          </small>
         </div>
       </div>
 
